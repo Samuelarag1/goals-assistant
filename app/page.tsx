@@ -1,10 +1,11 @@
-import type { Metadata } from "next"
-import SalesGoalCalculator from "@/components/sales-goal-calculator"
+import type { Metadata } from "next";
+import SalesGoalCalculator from "@/components/sales-goal-calculator";
 
 export const metadata: Metadata = {
-  title: "Asistente de Metas Mensuales",
-  description: "Calculadora de metas de ventas y plan de acción personalizado",
-}
+  title: "Asistente de Metas Mensuales | Sinergia Creativa",
+  description:
+    "Calculadora exclusiva de metas de ventas y plan de acción personalizado",
+};
 
 export default function Home() {
   return (
@@ -13,6 +14,5 @@ export default function Home() {
         <SalesGoalCalculator />
       </div>
     </main>
-  )
+  );
 }
-
