@@ -44,12 +44,10 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
-// Función de cifrado simple (solo para demostración)
 const encryptData = (data: string, key: string): string => {
   return btoa(data + key);
 };
 
-// Función de descifrado simple (solo para demostración)
 const decryptData = (encrypted: string, key: string): string => {
   try {
     const decoded = atob(encrypted);
@@ -62,7 +60,6 @@ const decryptData = (encrypted: string, key: string): string => {
   }
 };
 
-// Definición de productos con sus valores originales
 const PRODUCTOS = {
   "Producto A": 10000,
   "Producto B": 20000,
@@ -74,7 +71,6 @@ const PRODUCTOS = {
   "Producto H": 80000,
 };
 
-// Opciones de comisión con nombres personalizados
 const COMISIONES = [
   { id: "inicial", label: "Inicial (10%)", value: "10%" },
   { id: "avanzado", label: "Avanzado (15%)", value: "15%" },
@@ -83,7 +79,6 @@ const COMISIONES = [
   { id: "master", label: "Master (40%)", value: "40%" },
 ];
 
-// Matriz de ganancias por producto y comisión
 const GANANCIAS: { [key: string]: { [key: string]: number } } = {
   "10%": {
     "Producto A": 826,
@@ -137,7 +132,6 @@ const GANANCIAS: { [key: string]: { [key: string]: number } } = {
   },
 };
 
-// Tasas de cierre por comisión
 const TASAS_CIERRE = {
   "10%": 0.3,
   "15%": 0.35,
@@ -146,7 +140,6 @@ const TASAS_CIERRE = {
   "40%": 0.5,
 };
 
-// Valores "Tengo que vender" por comisión
 const TENGO_QUE_VENDER = {
   "10%": 21780000,
   "15%": 14374800,
@@ -155,7 +148,6 @@ const TENGO_QUE_VENDER = {
   "40%": 3920400,
 };
 
-// Presentaciones mínimas por mes según comisión
 const PRESENTACIONES_MES = {
   "10%": 63,
   "15%": 35,
@@ -164,7 +156,6 @@ const PRESENTACIONES_MES = {
   "40%": 7,
 };
 
-// Niveles de progreso con mensajes motivacionales
 const NIVELES_PROGRESO = [
   { min: 0, max: 20, mensaje: "Estás comenzando. ¡Sigue adelante!" },
   { min: 21, max: 40, mensaje: "Buen progreso. Mantén el enfoque." },
@@ -179,7 +170,6 @@ export default function SalesGoalCalculator() {
   const formattedDate = format(currentDate, "dd/MM/yy");
   const secretKey = useRef("SinergiaCreativa2025");
 
-  // Estados para las variables del usuario
   const [nombre, setNombre] = useState("Martín Rodríguez");
   const [mes, setMes] = useState(format(currentDate, "MMMM", { locale: es }));
   const [ticketPromedio, setTicketPromedio] = useState(1100);
@@ -190,7 +180,6 @@ export default function SalesGoalCalculator() {
   const [objetivo, setObjetivo] = useState(1800000);
   const [progreso, setProgreso] = useState(0);
 
-  // Estados calculados
   const [gananciaNetaHoy, setGananciaNetaHoy] = useState(0);
   const [tengoQueVender, setTengoQueVender] = useState(0);
   const [volumenCarrera, setVolumenCarrera] = useState(0);
@@ -204,15 +193,12 @@ export default function SalesGoalCalculator() {
 
   // Calcular valores cuando cambian las entradas
   useEffect(() => {
-    // Calcular ganancia neta hoy basada en la matriz de ganancias
     const gananciaHoy = GANANCIAS[comision]?.[producto] || 0;
     setGananciaNetaHoy(gananciaHoy);
 
-    // Obtener "Tengo que vender" de la matriz según la comisión
     const ventasNecesarias = TENGO_QUE_VENDER[comision] || 0;
 
-    // Ajustar "Tengo que vender" según el objetivo personalizado
-    const factorObjetivo = objetivo / 1800000; // Factor de ajuste basado en el objetivo predeterminado
+    const factorObjetivo = objetivo / 1800000;
     const ventasAjustadas = ventasNecesarias * factorObjetivo;
     setTengoQueVender(ventasAjustadas);
 
@@ -238,7 +224,6 @@ export default function SalesGoalCalculator() {
     const prospectos = totalVentas * 6;
     setNuevosProspectos(prospectos);
 
-    // Simular progreso (solo para demostración)
     const progresoCalculado = Math.min(
       Math.round((gananciaHoy / (objetivo / 12)) * 100),
       100
@@ -246,7 +231,6 @@ export default function SalesGoalCalculator() {
     setProgreso(progresoCalculado);
   }, [nombre, mes, ticketPromedio, valorUSD, comision, producto, objetivo]);
 
-  // Cargar datos guardados
   useEffect(() => {
     try {
       const savedData = localStorage.getItem("metasData");
@@ -274,8 +258,7 @@ export default function SalesGoalCalculator() {
     }
   }, []);
 
-  // Guardar datos
-  const guardarDatos = () => {
+  const saveData = () => {
     try {
       const dataToSave = {
         nombre,
@@ -288,7 +271,7 @@ export default function SalesGoalCalculator() {
         historialObjetivos: [
           ...historialObjetivos,
           { fecha: formattedDate, objetivo },
-        ].slice(-5), // Mantener solo los últimos 5
+        ].slice(-5),
       };
 
       const encrypted = encryptData(
@@ -313,8 +296,7 @@ export default function SalesGoalCalculator() {
     }
   };
 
-  // Exportar informe
-  const exportarInforme = () => {
+  const exportInform = () => {
     try {
       const informe = {
         titulo: "Informe de Metas Mensuales",
@@ -363,7 +345,6 @@ export default function SalesGoalCalculator() {
     }
   };
 
-  // Obtener mensaje motivacional según progreso
   const getMensajeMotivacional = () => {
     const nivel = NIVELES_PROGRESO.find(
       (n) => progreso >= n.min && progreso <= n.max
@@ -394,7 +375,7 @@ export default function SalesGoalCalculator() {
                   variant="ghost"
                   size="icon"
                   className="text-white"
-                  onClick={guardarDatos}
+                  onClick={saveData}
                 >
                   <Save className="h-5 w-5" />
                 </Button>
@@ -411,7 +392,7 @@ export default function SalesGoalCalculator() {
                   variant="ghost"
                   size="icon"
                   className="text-white"
-                  onClick={exportarInforme}
+                  onClick={exportInform}
                 >
                   <Download className="h-5 w-5" />
                 </Button>
@@ -602,11 +583,7 @@ export default function SalesGoalCalculator() {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={guardarDatos}
-              >
+              <Button variant="outline" className="gap-2" onClick={saveData}>
                 <Save className="h-4 w-4" />
                 Guardar Objetivo
               </Button>
@@ -726,7 +703,7 @@ export default function SalesGoalCalculator() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full gap-2" onClick={exportarInforme}>
+              <Button className="w-full gap-2" onClick={exportInform}>
                 <Download className="h-4 w-4" />
                 Exportar Plan de Acción
               </Button>
