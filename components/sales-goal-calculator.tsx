@@ -11,9 +11,8 @@ import {
   User,
   PieChart,
   Award,
-  Save,
   Download,
-  History,
+  Calculator,
 } from "lucide-react";
 import {
   Card,
@@ -21,21 +20,19 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-  CardDescription,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
   Tooltip,
   TooltipContent,
@@ -60,77 +57,37 @@ const decryptData = (encrypted: string, key: string): string => {
   }
 };
 
+// const PRODUCTOS = {
+//   "Producto A": 700000,
+//   "Producto B": 900000,
+//   "Producto C": 1100000,
+//   "Producto D": 1300000,
+//   "Producto E": 1500000,
+//   "Producto F": 1700000,
+//   "Producto G": 1900000,
+//   "Producto H": 2100000,
+// };
+
 const PRODUCTOS = {
-  "Producto A": 10000,
-  "Producto B": 20000,
-  "Producto C": 30000,
-  "Producto D": 40000,
-  "Producto E": 50000,
-  "Producto F": 60000,
-  "Producto G": 70000,
-  "Producto H": 80000,
+  "15 Piezas": 4990000,
+  "8 Piezas": 3649000,
+  "5 Piezas completas": 1640000,
+  "Olla 6Lts. con tapa": 910000,
+  "Olla 4Lts. con tapa": 720000,
+  "Bloque completo (RP ALL-IN-ONE)": 1750000,
+  "RP Juego de cuchillos 5 piezas (CHEF)": 625000,
+  'Paellera de 14" con tapa': 1080000,
+  "Sarten 26cm con tapa": 1080000,
+  "Max Tractor": 2500000,
 };
 
 const COMISIONES = [
-  { id: "inicial", label: "Inicial (10%)", value: "10%" },
-  { id: "avanzado", label: "Avanzado (15%)", value: "15%" },
-  { id: "experto", label: "Experto (20%)", value: "20%" },
-  { id: "elite", label: "Elite (35%)", value: "35%" },
-  { id: "master", label: "Master (40%)", value: "40%" },
+  { id: "noob", label: "Novato (10%)", value: "0.1" },
+  { id: "intermediate", label: "Intermedio (15%)", value: "0.15" },
+  { id: "senior", label: "Vendedor Senior (20%)", value: "0.2" },
+  { id: "dist_jr", label: "Distribuidor Junior (35%)", value: "0.35" },
+  { id: "dist_sr", label: "Distribuidor Independiente (40%)", value: "0.4" },
 ];
-
-const GANANCIAS: { [key: string]: { [key: string]: number } } = {
-  "10%": {
-    "Producto A": 826,
-    "Producto B": 1652,
-    "Producto C": 2478,
-    "Producto D": 3304,
-    "Producto E": 4130,
-    "Producto F": 4956,
-    "Producto G": 5782,
-    "Producto H": 6608,
-  },
-  "15%": {
-    "Producto A": 1240,
-    "Producto B": 2480,
-    "Producto C": 3720,
-    "Producto D": 4960,
-    "Producto E": 6200,
-    "Producto F": 7440,
-    "Producto G": 8680,
-    "Producto H": 9920,
-  },
-  "20%": {
-    "Producto A": 1653,
-    "Producto B": 3306,
-    "Producto C": 4959,
-    "Producto D": 6612,
-    "Producto E": 8265,
-    "Producto F": 9918,
-    "Producto G": 11571,
-    "Producto H": 13224,
-  },
-  "35%": {
-    "Producto A": 2893,
-    "Producto B": 5786,
-    "Producto C": 8679,
-    "Producto D": 11572,
-    "Producto E": 14465,
-    "Producto F": 17358,
-    "Producto G": 20251,
-    "Producto H": 23144,
-  },
-  "40%": {
-    "Producto A": 4000,
-    "Producto B": 8000,
-    "Producto C": 12000,
-    "Producto D": 16000,
-    "Producto E": 20000,
-    "Producto F": 24000,
-    "Producto G": 28000,
-    "Producto H": 32000,
-  },
-};
 
 const TASAS_CIERRE = {
   "10%": 0.3,
@@ -140,45 +97,19 @@ const TASAS_CIERRE = {
   "40%": 0.5,
 };
 
-const TENGO_QUE_VENDER = {
-  "10%": 21780000,
-  "15%": 14374800,
-  "20%": 10890000,
-  "35%": 6207300,
-  "40%": 3920400,
-};
-
-const PRESENTACIONES_MES = {
-  "10%": 63,
-  "15%": 35,
-  "20%": 13,
-  "35%": 11,
-  "40%": 7,
-};
-
-const NIVELES_PROGRESO = [
-  { min: 0, max: 20, mensaje: "Estás comenzando. ¡Sigue adelante!" },
-  { min: 21, max: 40, mensaje: "Buen progreso. Mantén el enfoque." },
-  { min: 41, max: 60, mensaje: "Vas por buen camino. No te detengas." },
-  { min: 61, max: 80, mensaje: "¡Excelente trabajo! Casi llegas a tu meta." },
-  { min: 81, max: 100, mensaje: "¡Increíble! Estás muy cerca de tu objetivo." },
-];
-
 export default function SalesGoalCalculator() {
   const { toast } = useToast();
   const currentDate = new Date();
   const formattedDate = format(currentDate, "dd/MM/yy");
   const secretKey = useRef("SinergiaCreativa2025");
 
-  const [nombre, setNombre] = useState("Martín Rodríguez");
+  const [nombre, setNombre] = useState("");
   const [mes, setMes] = useState(format(currentDate, "MMMM", { locale: es }));
-  const [ticketPromedio, setTicketPromedio] = useState(1100);
-  const [valorUSD, setValorUSD] = useState(1055);
+  const [ticketPromedio, setTicketPromedio] = useState<number | string>(" ");
+  const [valorUSD, setValorUSD] = useState<number | string>(" ");
   const [comision, setComision] = useState<keyof typeof TASAS_CIERRE>("10%");
-  const [producto, setProducto] =
-    useState<keyof typeof PRODUCTOS>("Producto A");
-  const [objetivo, setObjetivo] = useState(1800000);
-  const [progreso, setProgreso] = useState(0);
+  const [producto, setProducto] = useState<keyof typeof PRODUCTOS | "">("");
+  const [objetivo, setObjetivo] = useState("");
 
   const [gananciaNetaHoy, setGananciaNetaHoy] = useState(0);
   const [tengoQueVender, setTengoQueVender] = useState(0);
@@ -190,45 +121,30 @@ export default function SalesGoalCalculator() {
   const [historialObjetivos, setHistorialObjetivos] = useState<
     { fecha: string; objetivo: number }[]
   >([]);
+  const [gananciaNetaCalculada, setGananciaNetaCalculada] = useState<number>(0);
+  const [cuantoHayQueVender, setCuantoHayQueVender] = useState<number>(0);
+  const parsePorcentaje = (porcentajeStr: string): number =>
+    parseFloat(porcentajeStr.replace("%", "")) / 100;
 
-  // Calcular valores cuando cambian las entradas
+  const calcularGananciaNeta = (
+    precio: number,
+    porcentajeStr: string
+  ): number => {
+    const porcentaje = parsePorcentaje(porcentajeStr);
+    return Math.round((precio / 1.21) * porcentaje);
+  };
+
   useEffect(() => {
-    const gananciaHoy = GANANCIAS[comision]?.[producto] || 0;
-    setGananciaNetaHoy(gananciaHoy);
-
-    const ventasNecesarias = TENGO_QUE_VENDER[comision] || 0;
-
-    const factorObjetivo = objetivo / 1800000;
-    const ventasAjustadas = ventasNecesarias * factorObjetivo;
-    setTengoQueVender(ventasAjustadas);
-
-    // Calcular volumen en carrera
-    const volumen = ventasAjustadas / valorUSD;
-    setVolumenCarrera(volumen);
-
-    // Calcular total de ventas necesarias
-    const totalVentas = Math.floor(volumen / valorUSD);
-    setTotalVentasMes(totalVentas);
-
-    // Obtener presentaciones mínimas por mes según comisión
-    const presentaciones = PRESENTACIONES_MES[comision] || 0;
-    // Ajustar según el objetivo personalizado
-    const presentacionesAjustadas = Math.floor(presentaciones * factorObjetivo);
-    setPresentacionesMes(presentacionesAjustadas);
-
-    // Calcular presentaciones por semana (mensual / 4 + 1)
-    const presentacionesSem = Math.floor(presentacionesAjustadas / 4) + 1;
-    setPresentacionesSemana(presentacionesSem);
-
-    // Calcular nuevos prospectos (total ventas * 6)
-    const prospectos = totalVentas * 6;
-    setNuevosProspectos(prospectos);
-
-    const progresoCalculado = Math.min(
-      Math.round((gananciaHoy / (objetivo / 12)) * 100),
-      100
-    );
-    setProgreso(progresoCalculado);
+    const comisionFormated = Number(comision.split("%")[0]);
+    if (producto && PRODUCTOS[producto]) {
+      const ganancia = (
+        (PRODUCTOS[producto] / 1.21) *
+        comisionFormated
+      ).toFixed(2);
+      setGananciaNetaHoy(Number(ganancia));
+    } else {
+      console.log("Producto no válido o no seleccionado");
+    }
   }, [nombre, mes, ticketPromedio, valorUSD, comision, producto, objetivo]);
 
   useEffect(() => {
@@ -258,100 +174,6 @@ export default function SalesGoalCalculator() {
     }
   }, []);
 
-  const saveData = () => {
-    try {
-      const dataToSave = {
-        nombre,
-        mes,
-        ticketPromedio,
-        valorUSD,
-        comision,
-        producto,
-        objetivo,
-        historialObjetivos: [
-          ...historialObjetivos,
-          { fecha: formattedDate, objetivo },
-        ].slice(-5),
-      };
-
-      const encrypted = encryptData(
-        JSON.stringify(dataToSave),
-        secretKey.current
-      );
-      localStorage.setItem("metasData", encrypted);
-
-      setHistorialObjetivos(dataToSave.historialObjetivos);
-
-      toast({
-        title: "Datos guardados",
-        description: "Tus datos han sido guardados exitosamente",
-      });
-    } catch (error) {
-      console.error("Error al guardar datos:", error);
-      toast({
-        title: "Error",
-        description: "No se pudieron guardar los datos",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const exportInform = () => {
-    try {
-      const informe = {
-        titulo: "Informe de Metas Mensuales",
-        fecha: formattedDate,
-        usuario: nombre,
-        mes,
-        objetivo,
-        resultados: {
-          gananciaNetaHoy,
-          tengoQueVender,
-          volumenCarrera,
-          totalVentasMes,
-        },
-        planAccion: {
-          nuevosProspectos,
-          presentacionesMes,
-          presentacionesSemana,
-        },
-      };
-
-      const blob = new Blob([JSON.stringify(informe, null, 2)], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `informe-metas-${nombre
-        .replace(/\s+/g, "-")
-        .toLowerCase()}-${formattedDate}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      toast({
-        title: "Informe exportado",
-        description: "Tu informe ha sido exportado exitosamente",
-      });
-    } catch (error) {
-      console.error("Error al exportar informe:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo exportar el informe",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const getMensajeMotivacional = () => {
-    const nivel = NIVELES_PROGRESO.find(
-      (n) => progreso >= n.min && progreso <= n.max
-    );
-    return nivel?.mensaje || "¡Establece tus metas y comienza!";
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-gradient-to-r from-blue-600 to-indigo-700 p-4 rounded-lg text-white">
@@ -371,14 +193,14 @@ export default function SalesGoalCalculator() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
+                {/* <Button
                   variant="ghost"
                   size="icon"
                   className="text-white"
                   onClick={saveData}
                 >
                   <Save className="h-5 w-5" />
-                </Button>
+                </Button> */}
               </TooltipTrigger>
               <TooltipContent>
                 <p>Guardar datos</p>
@@ -388,14 +210,7 @@ export default function SalesGoalCalculator() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white"
-                  onClick={exportInform}
-                >
-                  <Download className="h-5 w-5" />
-                </Button>
+                <Download className="h-5 w-5" />
               </TooltipTrigger>
               <TooltipContent>
                 <p>Exportar informe</p>
@@ -404,31 +219,6 @@ export default function SalesGoalCalculator() {
           </TooltipProvider>
         </div>
       </div>
-
-      {historialObjetivos.length > 0 && (
-        <div className="flex items-center gap-2 justify-end">
-          <History className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">
-            Historial: {historialObjetivos.length} objetivos guardados
-          </span>
-        </div>
-      )}
-
-      <Card className="border-t-4 border-t-blue-600">
-        <CardHeader className="pb-2">
-          <CardTitle>Tu progreso actual</CardTitle>
-          <CardDescription>{getMensajeMotivacional()}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Progreso hacia tu meta mensual</span>
-              <span className="font-medium">{progreso}%</span>
-            </div>
-            <Progress value={progreso} className="h-2" />
-          </div>
-        </CardContent>
-      </Card>
 
       <Tabs defaultValue="variables" className="w-full">
         <TabsList className="grid grid-cols-2 w-full">
@@ -451,22 +241,42 @@ export default function SalesGoalCalculator() {
                   <Input
                     id="nombre"
                     value={nombre}
+                    placeholder="Ingrese su nombre"
+                    required
                     onChange={(e) => setNombre(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="mes">Mes</Label>
-                  <Input
-                    id="mes"
-                    value={mes}
-                    onChange={(e) => setMes(e.target.value)}
-                  />
+                  <Select required onValueChange={setMes}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona un mes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="january">Enero</SelectItem>
+                        <SelectItem value="february">Febrero</SelectItem>
+                        <SelectItem value="march">Marzo</SelectItem>
+                        <SelectItem value="april">Abril</SelectItem>
+                        <SelectItem value="may">Mayo</SelectItem>
+                        <SelectItem value="juny">Junio</SelectItem>
+                        <SelectItem value="july">Julio</SelectItem>
+                        <SelectItem value="august">Agosto</SelectItem>
+                        <SelectItem value="september">Septiembre</SelectItem>
+                        <SelectItem value="october">Octubre</SelectItem>
+                        <SelectItem value="november">Noviembre</SelectItem>
+                        <SelectItem value="december">Diciembre</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="ticket">Mi Ticket Promedio en USD</Label>
                   <Input
                     id="ticket"
-                    type="number"
+                    type="text"
+                    placeholder="Ticket promedio"
+                    required
                     value={ticketPromedio}
                     onChange={(e) => setTicketPromedio(Number(e.target.value))}
                   />
@@ -475,7 +285,9 @@ export default function SalesGoalCalculator() {
                   <Label htmlFor="valorUSD">Valor USD</Label>
                   <Input
                     id="valorUSD"
-                    type="number"
+                    type="text"
+                    placeholder="Valor del USD"
+                    required
                     value={valorUSD}
                     onChange={(e) => setValorUSD(Number(e.target.value))}
                   />
@@ -548,18 +360,6 @@ export default function SalesGoalCalculator() {
                   </span>
                 </div>
               </div>
-
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Tasa de Cierre:</span>
-                  <span className="text-lg font-medium">
-                    {TASAS_CIERRE[comision] || 0}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  (Variables de configuración)
-                </p>
-              </div>
             </CardContent>
           </Card>
 
@@ -567,54 +367,27 @@ export default function SalesGoalCalculator() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5" />
-                OBJETIVO ¿Cuánto quiero Ganar este mes en mi Venta personal?
+                OBJETIVO ¿Cuánto quiero ganar este mes en mi venta personal?
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <Label htmlFor="objetivo">Mi objetivo en $</Label>
+                <Label htmlFor="objetivo">Mi objetivo en ARS$</Label>
                 <Input
                   id="objetivo"
-                  type="number"
-                  value={objetivo}
-                  onChange={(e) => setObjetivo(Number(e.target.value))}
+                  type="text"
+                  placeholder="Indique su objetivo"
                   className="text-lg font-bold"
                 />
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button variant="outline" className="gap-2" onClick={saveData}>
-                <Save className="h-4 w-4" />
-                Guardar Objetivo
+              <Button variant="outline" className="gap-2" onClick={() => {}}>
+                <Calculator className="h-4 w-4" />
+                Calcular
               </Button>
             </CardFooter>
           </Card>
-
-          {historialObjetivos.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <History className="h-5 w-5" />
-                  Historial de Objetivos
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {historialObjetivos.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center p-2 border-b"
-                    >
-                      <span>{item.fecha}</span>
-                      <span className="font-medium">
-                        ${item.objetivo.toLocaleString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </TabsContent>
 
         <TabsContent value="resultados" className="space-y-6">
@@ -702,24 +475,7 @@ export default function SalesGoalCalculator() {
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
-              <Button className="w-full gap-2" onClick={exportInform}>
-                <Download className="h-4 w-4" />
-                Exportar Plan de Acción
-              </Button>
-            </CardFooter>
           </Card>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-            <div className="border-t pt-4">
-              <p className="text-sm text-muted-foreground">Firma Supervisor</p>
-              <Separator className="my-2" />
-            </div>
-            <div className="border-t pt-4">
-              <p className="text-sm text-muted-foreground">Firma emprendedor</p>
-              <Separator className="my-2" />
-            </div>
-          </div>
 
           <div className="text-center text-sm text-muted-foreground pt-4">
             <p>Versión Exclusiva - Sinergia Creativa</p>
