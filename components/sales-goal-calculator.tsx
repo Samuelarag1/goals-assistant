@@ -275,9 +275,9 @@ export default function SalesGoalCalculator() {
                   <Input
                     id="ticket"
                     type="text"
-                    placeholder="Ticket promedio"
+                    placeholder="Ingrese ticket promedio"
                     required
-                    value={ticketPromedio}
+                    // value={ticketPromedio}
                     onChange={(e) => setTicketPromedio(Number(e.target.value))}
                   />
                 </div>
@@ -286,9 +286,9 @@ export default function SalesGoalCalculator() {
                   <Input
                     id="valorUSD"
                     type="text"
-                    placeholder="Valor del USD"
+                    placeholder="Ingrese valor del USD"
                     required
-                    value={valorUSD}
+                    // value={valorUSD}
                     onChange={(e) => setValorUSD(Number(e.target.value))}
                   />
                 </div>
@@ -308,7 +308,6 @@ export default function SalesGoalCalculator() {
                 <div className="space-y-2">
                   <Label htmlFor="comision">Comisión Actual</Label>
                   <Select
-                    value={comision}
                     onValueChange={(value) =>
                       setComision(value as keyof typeof TASAS_CIERRE)
                     }
