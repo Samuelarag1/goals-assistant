@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import {
   Target,
   DollarSign,
@@ -11,7 +10,6 @@ import {
   User,
   PieChart,
   Award,
-  Download,
   Calculator,
 } from "lucide-react";
 import {
@@ -33,12 +31,6 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 const encryptData = (data: string, key: string): string => {
