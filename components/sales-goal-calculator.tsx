@@ -104,9 +104,9 @@ export default function SalesGoalCalculator() {
   const secretKey = useRef("SinergiaCreativa2025");
 
   const [nombre, setNombre] = useState("");
-  const [mes, setMes] = useState(format(currentDate, "MMMM", { locale: es }));
-  const [ticketPromedio, setTicketPromedio] = useState<number | string>(" ");
-  const [valorUSD, setValorUSD] = useState<number | string>(" ");
+  const [mes, setMes] = useState("");
+  const [ticketPromedio, setTicketPromedio] = useState<number | string>("");
+  const [valorUSD, setValorUSD] = useState<number | string>("");
   const [comision, setComision] = useState<keyof typeof TASAS_CIERRE>("10%");
   const [producto, setProducto] = useState<keyof typeof PRODUCTOS | "">("");
   const [objetivo, setObjetivo] = useState(0);
@@ -260,6 +260,9 @@ export default function SalesGoalCalculator() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
+                        <SelectItem disabled value="default">
+                          Seleccione un mes
+                        </SelectItem>
                         <SelectItem value="january">Enero</SelectItem>
                         <SelectItem value="february">Febrero</SelectItem>
                         <SelectItem value="march">Marzo</SelectItem>
@@ -282,6 +285,7 @@ export default function SalesGoalCalculator() {
                     id="ticket"
                     type="text"
                     placeholder="Ingrese ticket promedio"
+                    className="placeholder-gray-400"
                     required
                     value={ticketPromedio}
                     onChange={(e) => setTicketPromedio(e.target.value)}
@@ -293,6 +297,7 @@ export default function SalesGoalCalculator() {
                     id="valorUSD"
                     type="text"
                     placeholder="Ingrese valor del USD"
+                    className="placeholder-gray-400"
                     required
                     value={valorUSD}
                     onChange={(e) => setValorUSD(e.target.value)}
