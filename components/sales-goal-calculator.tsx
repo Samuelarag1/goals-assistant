@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import {
   Target,
   DollarSign,
@@ -11,7 +10,6 @@ import {
   User,
   PieChart,
   Award,
-  Download,
   Calculator,
 } from "lucide-react";
 import {
@@ -33,12 +31,6 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 const encryptData = (data: string, key: string): string => {
@@ -57,29 +49,30 @@ const decryptData = (encrypted: string, key: string): string => {
   }
 };
 
+// const PRODUCTOS = {
+//   "Producto A": 700000,
+//   "Producto B": 900000,
+//   "Producto C": 1100000,
+//   "Producto D": 1300000,
+//   "Producto E": 1500000,
+//   "Producto F": 1700000,
+//   "Producto G": 1900000,
+//   "Producto H": 2100000,
+// };
+
 const PRODUCTOS = {
-  "Producto A": 700000,
-  "Producto B": 900000,
-  "Producto C": 1100000,
-  "Producto D": 1300000,
-  "Producto E": 1500000,
-  "Producto F": 1700000,
-  "Producto G": 1900000,
-  "Producto H": 2100000,
+  "15 Piezas": 4990000,
+  "8 Piezas": 3649000,
+  "5 Piezas completas": 1640000,
+  "Olla 6Lts. con tapa": 910000,
+  "Olla 4Lts. con tapa": 720000,
+  "Bloque completo (RP ALL-IN-ONE)": 1750000,
+  "RP Juego de cuchillos 5 piezas (CHEF)": 625000,
+  'Paellera de 14" con tapa': 1080000,
+  "Sarten 26cm con tapa": 1080000,
+  "Max Tractor": 2500000,
 };
 
-// const PRODUCTOS = {
-//   "15 Piezas": 4990000,
-//   "8 Piezas": 3649000,
-//   "5 Piezas completas": 1640000,
-//   "Olla 6Lts. con tapa": 910000,
-//   "Olla 4Lts. con tapa": 720000,
-//   "Bloque completo (RP ALL-IN-ONE)": 1750000,
-//   "RP Juego de cuchillos 5 piezas (CHEF)": 625000,
-//   'Paellera de 14" con tapa': 1080000,
-//   "Sarten 26cm con tapa": 1080000,
-//   "Max Tractor": 2500000,
-// };
 const COMISIONES = [
   { id: "noob", label: "Novato (10%)", value: "10%" },
   { id: "intermediate", label: "Intermedio (15%)", value: "15%" },
@@ -103,9 +96,9 @@ export default function SalesGoalCalculator() {
   const secretKey = useRef("SinergiaCreativa2025");
 
   const [nombre, setNombre] = useState("");
-  const [mes, setMes] = useState(format(currentDate, "MMMM", { locale: es }));
-  const [ticketPromedio, setTicketPromedio] = useState<number | string>(" ");
-  const [valorUSD, setValorUSD] = useState<number | string>(" ");
+  const [mes, setMes] = useState("");
+  const [ticketPromedio, setTicketPromedio] = useState<number | string>("");
+  const [valorUSD, setValorUSD] = useState<number | string>("");
   const [comision, setComision] = useState<keyof typeof TASAS_CIERRE>("10%");
   const [producto, setProducto] = useState<keyof typeof PRODUCTOS | "">("");
   const [objetivo, setObjetivo] = useState(0);
@@ -259,6 +252,9 @@ export default function SalesGoalCalculator() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
+                        <SelectItem disabled value="default">
+                          Seleccione un mes
+                        </SelectItem>
                         <SelectItem value="january">Enero</SelectItem>
                         <SelectItem value="february">Febrero</SelectItem>
                         <SelectItem value="march">Marzo</SelectItem>
@@ -280,13 +276,11 @@ export default function SalesGoalCalculator() {
                   <Input
                     id="ticket"
                     type="text"
+                    placeholder="Ingrese ticket promedio"
+                    className="placeholder-gray-400"
                     required
-                    value={
-                      Number(ticketPromedio) > 0
-                        ? ticketPromedio
-                        : "Ingrese ticket promedio"
-                    }
-                    onChange={(e) => setTicketPromedio(Number(e.target.value))}
+                    value={ticketPromedio}
+                    onChange={(e) => setTicketPromedio(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -295,11 +289,10 @@ export default function SalesGoalCalculator() {
                     id="valorUSD"
                     type="text"
                     placeholder="Ingrese valor del USD"
+                    className="placeholder-gray-400"
                     required
-                    value={
-                      Number(valorUSD) > 0 ? valorUSD : "Indique su objetivo"
-                    }
-                    onChange={(e) => setValorUSD(+e.target.value)}
+                    value={valorUSD}
+                    onChange={(e) => setValorUSD(e.target.value)}
                   />
                 </div>
               </div>
