@@ -57,39 +57,38 @@ const decryptData = (encrypted: string, key: string): string => {
   }
 };
 
-// const PRODUCTOS = {
-//   "Producto A": 700000,
-//   "Producto B": 900000,
-//   "Producto C": 1100000,
-//   "Producto D": 1300000,
-//   "Producto E": 1500000,
-//   "Producto F": 1700000,
-//   "Producto G": 1900000,
-//   "Producto H": 2100000,
-// };
-
 const PRODUCTOS = {
-  "15 Piezas": 4990000,
-  "8 Piezas": 3649000,
-  "5 Piezas completas": 1640000,
-  "Olla 6Lts. con tapa": 910000,
-  "Olla 4Lts. con tapa": 720000,
-  "Bloque completo (RP ALL-IN-ONE)": 1750000,
-  "RP Juego de cuchillos 5 piezas (CHEF)": 625000,
-  'Paellera de 14" con tapa': 1080000,
-  "Sarten 26cm con tapa": 1080000,
-  "Max Tractor": 2500000,
+  "Producto A": 700000,
+  "Producto B": 900000,
+  "Producto C": 1100000,
+  "Producto D": 1300000,
+  "Producto E": 1500000,
+  "Producto F": 1700000,
+  "Producto G": 1900000,
+  "Producto H": 2100000,
 };
 
+// const PRODUCTOS = {
+//   "15 Piezas": 4990000,
+//   "8 Piezas": 3649000,
+//   "5 Piezas completas": 1640000,
+//   "Olla 6Lts. con tapa": 910000,
+//   "Olla 4Lts. con tapa": 720000,
+//   "Bloque completo (RP ALL-IN-ONE)": 1750000,
+//   "RP Juego de cuchillos 5 piezas (CHEF)": 625000,
+//   'Paellera de 14" con tapa': 1080000,
+//   "Sarten 26cm con tapa": 1080000,
+//   "Max Tractor": 2500000,
+// };
 const COMISIONES = [
-  { id: "noob", label: "Novato (10%)", value: "0.1" },
-  { id: "intermediate", label: "Intermedio (15%)", value: "0.15" },
-  { id: "senior", label: "Vendedor Senior (20%)", value: "0.2" },
-  { id: "dist_jr", label: "Distribuidor Junior (35%)", value: "0.35" },
-  { id: "dist_sr", label: "Distribuidor Independiente (40%)", value: "0.4" },
+  { id: "noob", label: "Novato (10%)", value: "10%" },
+  { id: "intermediate", label: "Intermedio (15%)", value: "15%" },
+  { id: "senior", label: "Vendedor Senior (20%)", value: "20%" },
+  { id: "dist_jr", label: "Distribuidor Junior (35%)", value: "35%" },
+  { id: "dist_sr", label: "Distribuidor Independiente (40%)", value: "40%" },
 ];
 
-const TASAS_CIERRE = {
+const TASAS_CIERRE: Record<string, number> = {
   "10%": 0.3,
   "15%": 0.35,
   "20%": 0.7,
@@ -109,8 +108,10 @@ export default function SalesGoalCalculator() {
   const [valorUSD, setValorUSD] = useState<number | string>(" ");
   const [comision, setComision] = useState<keyof typeof TASAS_CIERRE>("10%");
   const [producto, setProducto] = useState<keyof typeof PRODUCTOS | "">("");
-  const [objetivo, setObjetivo] = useState("");
-
+  const [objetivo, setObjetivo] = useState(0);
+  const [activeTab, setActiveTab] = useState<"variables" | "resultados">(
+    "variables"
+  );
   const [gananciaNetaHoy, setGananciaNetaHoy] = useState(0);
   const [tengoQueVender, setTengoQueVender] = useState(0);
   const [volumenCarrera, setVolumenCarrera] = useState(0);
@@ -121,59 +122,84 @@ export default function SalesGoalCalculator() {
   const [historialObjetivos, setHistorialObjetivos] = useState<
     { fecha: string; objetivo: number }[]
   >([]);
-  const [gananciaNetaCalculada, setGananciaNetaCalculada] = useState<number>(0);
-  const [cuantoHayQueVender, setCuantoHayQueVender] = useState<number>(0);
-  const parsePorcentaje = (porcentajeStr: string): number =>
-    parseFloat(porcentajeStr.replace("%", "")) / 100;
-
-  const calcularGananciaNeta = (
-    precio: number,
-    porcentajeStr: string
-  ): number => {
-    const porcentaje = parsePorcentaje(porcentajeStr);
-    return Math.round((precio / 1.21) * porcentaje);
-  };
 
   useEffect(() => {
-    const comisionFormated = Number(comision.split("%")[0]);
-    if (producto && PRODUCTOS[producto]) {
-      const ganancia = (
-        (PRODUCTOS[producto] / 1.21) *
-        comisionFormated
-      ).toFixed(2);
-      setGananciaNetaHoy(Number(ganancia));
-    } else {
-      console.log("Producto no válido o no seleccionado");
-    }
-  }, [nombre, mes, ticketPromedio, valorUSD, comision, producto, objetivo]);
-
-  useEffect(() => {
+    const saved = localStorage.getItem("metasData");
+    if (!saved) return;
     try {
-      const savedData = localStorage.getItem("metasData");
-      if (savedData) {
-        const decrypted = decryptData(savedData, secretKey.current);
-        if (decrypted) {
-          const data = JSON.parse(decrypted);
-          setNombre(data.nombre || nombre);
-          setMes(data.mes || mes);
-          setTicketPromedio(data.ticketPromedio || ticketPromedio);
-          setValorUSD(data.valorUSD || valorUSD);
-          setComision(data.comision || comision);
-          setProducto(data.producto || producto);
-          setObjetivo(data.objetivo || objetivo);
-          setHistorialObjetivos(data.historialObjetivos || []);
-
-          toast({
-            title: "Datos cargados",
-            description: "Se han cargado tus datos guardados anteriormente",
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error al cargar datos:", error);
+      const data = JSON.parse(decryptData(saved, secretKey.current));
+      setNombre(data.nombre);
+      setMes(data.mes);
+      setTicketPromedio(data.ticketPromedio);
+      setValorUSD(data.valorUSD);
+      setComision(data.comision);
+      setProducto(data.producto);
+      setObjetivo(data.objetivo);
+      setHistorialObjetivos(data.historialObjetivos || []);
+      toast({
+        title: "Datos cargados",
+        description: "Datos recuperados de tu última sesión.",
+      });
+    } catch {
+      console.warn("No se pudo descifrar o parsear metasData");
     }
   }, []);
+  const handleCalculate = () => {
+    const pct = Number(comision.replace("%", "")) / 100;
+    const base = PRODUCTOS[producto as keyof typeof PRODUCTOS] ?? 0;
+    const ganancia = (base / 1.21) * pct;
+    setGananciaNetaHoy(+ganancia.toFixed(2));
 
+    const wantSell = (objetivo / pct) * 1.21;
+    setTengoQueVender(+wantSell.toFixed(2));
+
+    const volumen = wantSell / Number(valorUSD);
+    setVolumenCarrera(+volumen.toFixed(2));
+
+    const tickets = volumen / Number(ticketPromedio);
+
+    setTotalVentasMes(Math.ceil(tickets));
+
+    setNuevosProspectos(Math.round(tickets * 6));
+    const tasaCierre = TASAS_CIERRE[comision];
+    setPresentacionesMes(Math.ceil(tickets / tasaCierre));
+    console.log(TASAS_CIERRE[comision]);
+    setPresentacionesSemana(Math.ceil(tickets / tasaCierre / 4));
+    console.log(presentacionesMes, presentacionesSemana);
+
+    const nuevaEntrada = { fecha: format(new Date(), "dd/MM/yyyy"), objetivo };
+    setHistorialObjetivos((prev) => [
+      { ...nuevaEntrada, objetivo: Number(objetivo) },
+      ...prev,
+    ]);
+
+    const toSave = {
+      nombre,
+      mes,
+      ticketPromedio,
+      valorUSD,
+      comision,
+      producto,
+      objetivo,
+      historialObjetivos: [nuevaEntrada, ...historialObjetivos],
+    };
+    localStorage.setItem(
+      "metasData",
+      encryptData(JSON.stringify(toSave), secretKey.current)
+    );
+
+    setActiveTab("resultados");
+  };
+  useEffect(() => {
+    if (!producto) {
+      setGananciaNetaHoy(0);
+      return;
+    }
+    const pct = Number(comision.replace("%", "")) / 100;
+    const base = PRODUCTOS[producto as keyof typeof PRODUCTOS] || 0;
+    const ganancia = (base / 1.21) * pct;
+    setGananciaNetaHoy(+ganancia.toFixed(2));
+  }, [producto, comision]);
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-gradient-to-r from-blue-600 to-indigo-700 p-4 rounded-lg text-white">
@@ -190,37 +216,16 @@ export default function SalesGoalCalculator() {
           <div className="text-sm bg-white/20 px-3 py-1 rounded-full">
             Fecha: {formattedDate}
           </div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                {/* <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white"
-                  onClick={saveData}
-                >
-                  <Save className="h-5 w-5" />
-                </Button> */}
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Guardar datos</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Download className="h-5 w-5" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Exportar informe</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         </div>
       </div>
 
-      <Tabs defaultValue="variables" className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) =>
+          setActiveTab(value as "variables" | "resultados")
+        }
+        className="w-full"
+      >
         <TabsList className="grid grid-cols-2 w-full">
           <TabsTrigger value="variables">Variables del Usuario</TabsTrigger>
           <TabsTrigger value="resultados">Resultados y Plan</TabsTrigger>
@@ -248,7 +253,7 @@ export default function SalesGoalCalculator() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="mes">Mes</Label>
-                  <Select required onValueChange={setMes}>
+                  <Select required onValueChange={setMes} value={mes}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona un mes" />
                     </SelectTrigger>
@@ -275,9 +280,12 @@ export default function SalesGoalCalculator() {
                   <Input
                     id="ticket"
                     type="text"
-                    placeholder="Ingrese ticket promedio"
                     required
-                    // value={ticketPromedio}
+                    value={
+                      Number(ticketPromedio) > 0
+                        ? ticketPromedio
+                        : "Ingrese ticket promedio"
+                    }
                     onChange={(e) => setTicketPromedio(Number(e.target.value))}
                   />
                 </div>
@@ -288,8 +296,10 @@ export default function SalesGoalCalculator() {
                     type="text"
                     placeholder="Ingrese valor del USD"
                     required
-                    // value={valorUSD}
-                    onChange={(e) => setValorUSD(Number(e.target.value))}
+                    value={
+                      Number(valorUSD) > 0 ? valorUSD : "Indique su objetivo"
+                    }
+                    onChange={(e) => setValorUSD(+e.target.value)}
                   />
                 </div>
               </div>
@@ -308,8 +318,9 @@ export default function SalesGoalCalculator() {
                 <div className="space-y-2">
                   <Label htmlFor="comision">Comisión Actual</Label>
                   <Select
-                    onValueChange={(value) =>
-                      setComision(value as keyof typeof TASAS_CIERRE)
+                    value={comision}
+                    onValueChange={(val) =>
+                      setComision(val as keyof typeof TASAS_CIERRE)
                     }
                   >
                     <SelectTrigger>
@@ -374,14 +385,19 @@ export default function SalesGoalCalculator() {
                 <Label htmlFor="objetivo">Mi objetivo en ARS$</Label>
                 <Input
                   id="objetivo"
+                  value={objetivo ? objetivo : "Indique su objetivo"}
+                  onChange={(e) => setObjetivo(Number(e.target.value))}
                   type="text"
-                  placeholder="Indique su objetivo"
-                  className="text-lg font-bold"
+                  className="text-lg"
                 />
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button variant="outline" className="gap-2" onClick={() => {}}>
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={handleCalculate}
+              >
                 <Calculator className="h-4 w-4" />
                 Calcular
               </Button>
@@ -473,6 +489,33 @@ export default function SalesGoalCalculator() {
                   <span className="font-bold text-lg">20Hs semanales</span>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="flex flex-col md:flex-row items-stretch gap-4 p-4 h-full">
+              <Button
+                variant="outline"
+                className="flex-1 flex items-center justify-center gap-2 h-10 md:h-20"
+                onClick={() =>
+                  window.open("https://sinergiacreativa.casa/slides", "_blank")
+                }
+              >
+                <Award className="h-5 w-5" />
+                Ir al Campus
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 flex items-center justify-center gap-2 h-10 md:h-20"
+                onClick={() =>
+                  window.open(
+                    "https://sinergiacreativa.casa/web/login",
+                    "_blank"
+                  )
+                }
+              >
+                <Target className="h-5 w-5" />
+                Ir al CRM
+              </Button>
             </CardContent>
           </Card>
 
