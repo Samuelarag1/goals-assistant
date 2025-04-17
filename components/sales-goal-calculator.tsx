@@ -59,17 +59,16 @@ const decryptData = (encrypted: string, key: string): string => {
 //   "Producto G": 1900000,
 //   "Producto H": 2100000,
 // };
-
 const PRODUCTOS = {
-  "15 Piezas": 4990000,
-  "8 Piezas": 3649000,
-  "5 Piezas completas": 1640000,
-  "Olla 6Lts. con tapa": 910000,
-  "Olla 4Lts. con tapa": 720000,
-  "Bloque completo (RP ALL-IN-ONE)": 1750000,
-  "RP Juego de cuchillos 5 piezas (CHEF)": 625000,
-  'Paellera de 14" con tapa': 1080000,
-  "Sarten 26cm con tapa": 1080000,
+  "15 Pzs": 4990000,
+  "8 Pzs": 3649000,
+  "5 Pzs Comp.": 18250000,
+  "Olla 6L": 910000,
+  "Olla 4L": 720000,
+  "Bloque RP All-in-1": 1750000,
+  "Cuchillos RP (5)": 625000,
+  'Paellera 14"': 1080000,
+  "Sartén 26cm": 1080000,
   "Max Tractor": 2500000,
 };
 

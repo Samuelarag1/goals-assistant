@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SalesGoalCalculator from "@/components/sales-goal-calculator";
 import Footer from "@/components/footer";
+import ChatAssistant from "@/components/chat-assistant";
 
 export const metadata: Metadata = {
   title: "Asistente de Metas Mensuales | Sinergia Creativa",
@@ -14,6 +15,7 @@ export default function Home() {
       <div className="container mx-auto max-w-4xl">
         <SalesGoalCalculator />
         <Footer />
+        <ChatAssistant />
       </div>
     </main>
   );
