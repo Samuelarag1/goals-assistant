@@ -101,7 +101,7 @@ export default function SalesGoalCalculator() {
   const [valorUSD, setValorUSD] = useState<number | string>("");
   const [comision, setComision] = useState<keyof typeof TASAS_CIERRE>("10%");
   const [producto, setProducto] = useState<keyof typeof PRODUCTOS | "">("");
-  const [objetivo, setObjetivo] = useState(0);
+  const [objetivo, setObjetivo] = useState("");
   const [activeTab, setActiveTab] = useState<"variables" | "resultados">(
     "variables"
   );
@@ -143,7 +143,7 @@ export default function SalesGoalCalculator() {
     const ganancia = (base / 1.21) * pct;
     setGananciaNetaHoy(+ganancia.toFixed(2));
 
-    const wantSell = (objetivo / pct) * 1.21;
+    const wantSell = (Number(objetivo) / pct) * 1.21;
     setTengoQueVender(+wantSell.toFixed(2));
 
     const volumen = wantSell / Number(valorUSD);
@@ -378,8 +378,9 @@ export default function SalesGoalCalculator() {
                 <Label htmlFor="objetivo">Mi objetivo en ARS$</Label>
                 <Input
                   id="objetivo"
-                  value={objetivo ? objetivo : "Indique su objetivo"}
-                  onChange={(e) => setObjetivo(Number(e.target.value))}
+                  value={objetivo}
+                  placeholder="Ingrese su objetivo"
+                  onChange={(e) => setObjetivo(e.target.value)}
                   type="text"
                   className="text-lg"
                 />
